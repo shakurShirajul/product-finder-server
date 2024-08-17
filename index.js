@@ -32,6 +32,15 @@ app.get("/products", async (req, res) => {
         $caseSensitive: false,
       },
     });
+  } else if (req.query.filters) {
+    const filter = req.query.filters;
+    console.log(filter);
+    if (filter === "LowToHigh") {
+        products = await Products.find({}).sort({price: 1});
+        console.log(products);
+    } else if (filter === "HighToLow") {
+    } else if (filter === "NewFirst") {
+    }
   } else {
     products = await Products.find({});
   }
