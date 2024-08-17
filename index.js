@@ -45,8 +45,16 @@ app.get("/products", async (req, res) => {
       products = await Products.find({}).sort({ date: -1 });
     }
     /* Brand and Category Checked Box */
-  } else if (req.query.brandChecked || req.query.categoryChecked) {
+  } else if (
+    req.query.brandChecked ||
+    req.query.categoryChecked ||
+    req.query.minPrice ||
+    req.query.maxPrice
+  ) {
     console.log(req.query.brandChecked, "--", req.query.categoryChecked);
+
+    const minPrice = req.query.minPrice;
+    const maxPrice = req.query.maxPrice;
 
     let checkedBrand = [],
       checkedCategory = [];
@@ -66,6 +74,11 @@ app.get("/products", async (req, res) => {
     if (checkedBrand.length > 0) query.brand = { $in: checkedBrand };
 
     if (checkedCategory.length > 0) query.category = { $in: checkedCategory };
+
+    query.price = {
+        $gte: minPrice,
+        $lte: maxPrice
+    }
 
     products = await Products.find(query);
   } else {
