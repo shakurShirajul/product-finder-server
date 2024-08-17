@@ -24,10 +24,11 @@ app.get("/", async (req, res) => {
 // Products Routes
 app.get("/products", async (req, res) => {
   let products = [];
-  if (req.query.title) {
+  if (req.query.name) {
+    console.log("Search");
     products = await Products.find({
       $text: {
-        $search: req.query.title,
+        $search: req.query.name,
         $caseSensitive: false,
       },
     });
