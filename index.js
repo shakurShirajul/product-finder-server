@@ -24,7 +24,9 @@ app.get("/", async (req, res) => {
 // Products Routes
 app.get("/products", async (req, res) => {
   let products = [];
+
   if (req.query.name) {
+    /// Search Functionality
     console.log("Search");
     products = await Products.find({
       $text: {
@@ -33,6 +35,7 @@ app.get("/products", async (req, res) => {
       },
     });
   } else if (req.query.filters) {
+    /// Filter Functionality
     const filter = req.query.filters;
     if (filter === "LowToHigh") {
       products = await Products.find({}).sort({ price: 1 });
@@ -41,6 +44,30 @@ app.get("/products", async (req, res) => {
     } else if (filter === "NewFirst") {
       products = await Products.find({}).sort({ date: -1 });
     }
+    /* Brand and Category Checked Box */
+  } else if (req.query.brandChecked || req.query.categoryChecked) {
+    console.log(req.query.brandChecked, "--", req.query.categoryChecked);
+
+    let checkedBrand = [],
+      checkedCategory = [];
+
+    if (req.query.brandChecked) {
+      checkedBrand = req.query.brandChecked.split(",");
+    }
+    if (req.query.categoryChecked) {
+      checkedCategory = req.query.categoryChecked.split(",");
+    }
+
+    const query = {};
+
+    console.log(checkedBrand.length);
+    console.log(checkedCategory.length);
+
+    if (checkedBrand.length > 0) query.brand = { $in: checkedBrand };
+
+    if (checkedCategory.length > 0) query.category = { $in: checkedCategory };
+
+    products = await Products.find(query);
   } else {
     products = await Products.find({});
   }
