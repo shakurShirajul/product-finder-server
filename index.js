@@ -33,7 +33,7 @@ app.get("/products", async (req, res) => {
 
   if (req.query.name) {
     /// Search Functionality
-    console.log("Search");
+    // console.log("Search");
     products = await Products.find({
       $text: {
         $search: req.query.name,
