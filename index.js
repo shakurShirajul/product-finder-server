@@ -1,4 +1,4 @@
-import express from "express";
+import express, { response } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import "dotenv/config";
@@ -22,6 +22,12 @@ app.get("/", async (req, res) => {
 });
 
 // Products Routes
+
+app.get("/products-length", async (req, res) => {
+  const products = await Products.find({});
+  res.send(products);
+});
+
 app.get("/products", async (req, res) => {
   let products = [];
 
@@ -49,12 +55,15 @@ app.get("/products", async (req, res) => {
     req.query.brandChecked ||
     req.query.categoryChecked ||
     req.query.minPrice ||
-    req.query.maxPrice
+    req.query.maxPrice ||
+    req.query.page
   ) {
     console.log(req.query.brandChecked, "--", req.query.categoryChecked);
 
     const minPrice = req.query.minPrice;
     const maxPrice = req.query.maxPrice;
+
+    const page = parseInt(req.query.page);
 
     let checkedBrand = [],
       checkedCategory = [];
@@ -68,21 +77,21 @@ app.get("/products", async (req, res) => {
 
     const query = {};
 
-    console.log(checkedBrand.length);
-    console.log(checkedCategory.length);
-
     if (checkedBrand.length > 0) query.brand = { $in: checkedBrand };
 
     if (checkedCategory.length > 0) query.category = { $in: checkedCategory };
 
     query.price = {
-        $gte: minPrice,
-        $lte: maxPrice
-    }
+      $gte: minPrice,
+      $lte: maxPrice,
+    };
 
-    products = await Products.find(query);
+    products = await Products.find(query)
+      .skip(page * 10)
+      .limit(10);
   } else {
-    products = await Products.find({});
+    products = await Products.find({}).skip(0 * 10)
+    .limit(10);
   }
   res.send(products);
 });
