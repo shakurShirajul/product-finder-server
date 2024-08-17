@@ -34,12 +34,12 @@ app.get("/products", async (req, res) => {
     });
   } else if (req.query.filters) {
     const filter = req.query.filters;
-    console.log(filter);
     if (filter === "LowToHigh") {
-        products = await Products.find({}).sort({price: 1});
-        console.log(products);
+      products = await Products.find({}).sort({ price: 1 });
     } else if (filter === "HighToLow") {
+      products = await Products.find({}).sort({ price: -1 });
     } else if (filter === "NewFirst") {
+      products = await Products.find({}).sort({ date: -1 });
     }
   } else {
     products = await Products.find({});
